@@ -8,6 +8,7 @@
 #include <dt-bindings/iio/qcom,spmi-adc5-gen3-pmxr2230.h>
 #include "flourite-sm7635-xiaomi-fingerprint.dtsi"
 #include "flourite-sm7635-xiaomi-hdbds.dtsi"
+#include "flourite-haptics.dtsi"
 
 /* SENSOR start */
 &qupv3_se3_spi {

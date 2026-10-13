@@ -1,0 +1,79 @@
+// SPDX-License-Identifier: GPL-2.0-only
+#include <dt-bindings/gpio/gpio.h>
+
+&tlmm {
+	flourite_haptic_reset: haptic-reset {
+		mux { pins = "gpio125"; function = "gpio"; };
+		config { pins = "gpio125"; drive-strength = <2>; bias-disable; output-low; };
+	};
+	flourite_haptic_active: haptic-active {
+		mux { pins = "gpio125"; function = "gpio"; };
+		config { pins = "gpio125"; drive-strength = <2>; bias-disable; output-high; };
+	};
+	flourite_haptic_irq: haptic-irq {
+		mux { pins = "gpio124"; function = "gpio"; };
+		config { pins = "gpio124"; drive-strength = <2>; bias-pull-up; input-enable; };
+	};
+	flourite_ics_haptic: ics-haptic {
+		rst {
+			pins = "gpio125";
+			function = "gpio";
+			drive-strength = <2>;
+			bias-disable;
+			output-high;
+		};
+		irq {
+			pins = "gpio124";
+			function = "gpio";
+			bias-pull-up;
+			input-enable;
+			drive-open-drain;
+			power-source = <0>;
+		};
+	};
+};
+
+&qupv3_se7_i2c {
+	status = "okay";
+	sih6887_haptic@6b {
+		compatible = "silicon,sih_haptic_688X";
+		reg = <0x6b>;
+		irq-gpio = <&tlmm 124 GPIO_ACTIVE_HIGH>;
+		reset-gpio = <&tlmm 125 GPIO_ACTIVE_HIGH>;
+		interrupt = <26 1>;
+		pinctrl-names = "sih_reset_reset", "sih_reset_active", "sih_interrupt_active";
+		pinctrl-0 = <&flourite_haptic_reset>;
+		pinctrl-1 = <&flourite_haptic_active>;
+		pinctrl-2 = <&flourite_haptic_irq>;
+		lra_name = "0809";
+		vib_effect_id_boundary = <10>;
+		vib_effect_max = <197>;
+		vib_f0_pre = <1700>;
+		vib_bst_vol_default = <95>;
+	};
+	ics_haptic@5f {
+		compatible = "ics,haptic_rt";
+		reg = <0x5f>;
+		device-name = "vibrator";
+		richtap-name = "aac_richtap";
+		pinctrl-names = "default";
+		pinctrl-0 = <&flourite_ics_haptic>;
+		gpio-en = <&tlmm 125 GPIO_ACTIVE_HIGH>;
+		gpio-irq = <&tlmm 124 GPIO_ACTIVE_HIGH>;
+		rt6010_chip_id = <0x6b>;
+		rt6010_reg_size = <0x6c>;
+		rt6010_ram_size = <0x600>;
+		rt6010_sys_f0 = <1700>;
+		rt6010_list_base_addr = <0x400>;
+		rt6010_wave_base_addr = <0x420>;
+		rt6010_fifo_ae = <0x200>;
+		rt6010_fifo_af = <0x300>;
+		rt6010_boost_mode = <0>;
+		rt6010_boost_vol = <10>;
+		rt6010_gain = <128>;
+		rt6010_brake_en = <0>;
+		rt6010_brake_wave_no = <0>;
+		rt6010_brake_const = <0>;
+		rt6010_brake_acq_point = <0>;
+	};
+};
