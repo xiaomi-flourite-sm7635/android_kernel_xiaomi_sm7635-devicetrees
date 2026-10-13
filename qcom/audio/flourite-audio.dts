@@ -1,0 +1,136 @@
+// SPDX-License-Identifier: GPL-2.0-only
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/gpio/gpio.h>
+#include "volcano-audio-overlay.dtsi"
+
+/ {
+	model = "Xiaomi Flourite audio";
+	compatible = "qcom,volcano-mtp", "qcom,volcano";
+	qcom,msm-id = <636 0x10000>, <640 0x10000>, <641 0x10000>;
+	qcom,board-id = <8 0>;
+	xiaomi,miboard-id = <0xe 0>;
+};
+
+&pineapple_snd {
+	qcom,model = "volcano-mtp-snd-card";
+	qcom,sen-mi2s-gpios = <&flourite_sen_mi2s>;
+	qcom,unsupported-typec-analog-acc;
+	qcom,wcd-disabled = <1>;
+	qcom,wsa-max-devs = <0>;
+	qcom,tdm-audio-intf = <1>;
+	qcom,tdm-max-slots = <4>;
+	qcom,tdm-clk-attribute = <4 4 4 4 4 4 4 4>;
+	qcom,ext-disp-audio-rx = <1>;
+	qcom,audio-routing =
+		"TX DMIC0", "Digital Mic0", "TX DMIC1", "Digital Mic1",
+		"TX DMIC2", "Digital Mic2", "TX DMIC3", "Digital Mic3",
+		"RX_TX DEC0_INP", "TX DEC0 MUX", "RX_TX DEC1_INP", "TX DEC1 MUX",
+		"RX_TX DEC2_INP", "TX DEC2 MUX", "RX_TX DEC3_INP", "TX DEC3 MUX",
+		"VA SWR_INPUT", "VA_SWR_CLK", "VA_AIF1 CAP", "VA_SWR_CLK",
+		"VA_AIF2 CAP", "VA_SWR_CLK", "VA_AIF3 CAP", "VA_SWR_CLK",
+		"VA DMIC0", "Digital Mic0", "VA DMIC1", "Digital Mic1",
+		"VA DMIC2", "Digital Mic2", "VA DMIC3", "Digital Mic3";
+};
+
+&lpass_cdc { qcom,num-macros = <3>; };
+&wsa_macro { status = "disabled"; };
+&wsa883x_0221 { status = "disabled"; };
+&wsa883x_0222 { status = "disabled"; };
+&wsa_spkr_en01 { status = "disabled"; };
+&wsa_spkr_en02 { status = "disabled"; };
+&wcd9378_codec { status = "disabled"; };
+&wcd9378_rx_slave { status = "disabled"; };
+&wcd9378_tx_slave { status = "disabled"; };
+&cdc_dmic45_gpios { status = "disabled"; };
+&cdc_dmic67_gpios { status = "disabled"; };
+
+&spf_core_platform {
+	flourite_sen_mi2s: sen_mi2s_pinctrl {
+		compatible = "qcom,msm-cdc-pinctrl";
+		status = "okay";
+		pinctrl-names = "aud_active", "aud_sleep";
+		pinctrl-0 = <&lpi_i2s2_sck_active &lpi_i2s2_ws_active
+			     &lpi_i2s2_sd0_active &lpi_i2s2_sd1_active>;
+		pinctrl-1 = <&lpi_i2s2_sck_sleep &lpi_i2s2_ws_sleep
+			     &lpi_i2s2_sd0_sleep &lpi_i2s2_sd1_sleep>;
+		qcom,lpi-gpios;
+		#gpio-cells = <0>;
+	};
+};
+
+&lpi_i2s2_sck_active { config { drive-strength = <2>; }; };
+&lpi_i2s2_ws_active { config { drive-strength = <2>; }; };
+&lpi_i2s2_sd0_active { config { drive-strength = <2>; }; };
+
+&tlmm {
+	flourite_amp0_reset: amp0-reset {
+		mux { pins = "gpio54"; function = "gpio"; };
+		config { pins = "gpio54"; drive-strength = <16>; bias-disable; output-high; };
+	};
+	flourite_amp1_reset: amp1-reset {
+		mux { pins = "gpio146"; function = "gpio"; };
+		config { pins = "gpio146"; drive-strength = <16>; bias-disable; output-high; };
+	};
+	flourite_amp0_irq: amp0-irq {
+		mux { pins = "gpio38"; function = "gpio"; };
+		config { pins = "gpio38"; drive-strength = <2>; bias-pull-up; input-enable; };
+	};
+	flourite_amp1_irq: amp1-irq {
+		mux { pins = "gpio52"; function = "gpio"; };
+		config { pins = "gpio52"; drive-strength = <2>; bias-pull-up; input-enable; };
+	};
+	flourite_rcv_high: rcv-high {
+		mux { pins = "gpio35"; function = "gpio"; };
+		config { pins = "gpio35"; drive-strength = <2>; bias-pull-up; output-high; };
+	};
+	flourite_rcv_low: rcv-low {
+		mux { pins = "gpio35"; function = "gpio"; };
+		config { pins = "gpio35"; drive-strength = <2>; bias-disable; output-low; };
+	};
+};
+
+&qupv3_se12_i2c {
+	status = "okay";
+	aw884xx_smartpa@34 {
+		compatible = "awinic,aw884xx_smartpa";
+		reg = <0x34>;
+		reset-gpio = <&tlmm 54 GPIO_ACTIVE_HIGH>;
+		reset-polarity = <0>;
+		irq-gpio = <&tlmm 38 GPIO_ACTIVE_HIGH>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <38 0x2008>;
+		interrupt-names = "smartpa_irq";
+		pinctrl-names = "default", "rcv_gpio_high", "rcv_gpio_low";
+		pinctrl-0 = <&flourite_amp0_reset &flourite_amp0_irq>;
+		pinctrl-1 = <&flourite_rcv_high>;
+		pinctrl-2 = <&flourite_rcv_low>;
+		spk-sw-gpio = <&tlmm 35 GPIO_ACTIVE_HIGH>;
+		spksw-gpio = <&tlmm 35 GPIO_ACTIVE_HIGH>;
+		dc-flag = <0>;
+		sync-load = <1>;
+		sound-channel = <0>;
+		pll-check-disable;
+		aw-cali-mode = "none";
+		monitor-mode = "hal_monitor";
+	};
+	aw884xx_smartpa@36 {
+		compatible = "awinic,aw884xx_smartpa";
+		reg = <0x36>;
+		reset-gpio = <&tlmm 146 GPIO_ACTIVE_HIGH>;
+		reset-polarity = <0>;
+		irq-gpio = <&tlmm 52 GPIO_ACTIVE_HIGH>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <52 0x2008>;
+		interrupt-names = "smartpa_irq";
+		pinctrl-names = "default";
+		pinctrl-0 = <&flourite_amp1_reset &flourite_amp1_irq>;
+		dc-flag = <0>;
+		sync-load = <1>;
+		sound-channel = <1>;
+		pll-check-disable;
+		aw-cali-mode = "none";
+		monitor-mode = "hal_monitor";
+	};
+};
