@@ -10,6 +10,14 @@
 #include "flourite-sm7635-xiaomi-hdbds.dtsi"
 #include "flourite-haptics.dtsi"
 
+&ramoops_mem {
+	/* Keep the Xiaomi pmsg buffer at offset 0x200000. */
+	record-size = <0x100000>;
+	console-size = <0x100000>;
+	pmsg-size = <0x200000>;
+	max-reason = <2>;
+};
+
 /* SENSOR start */
 &qupv3_se3_spi {
 	status = "ok";
