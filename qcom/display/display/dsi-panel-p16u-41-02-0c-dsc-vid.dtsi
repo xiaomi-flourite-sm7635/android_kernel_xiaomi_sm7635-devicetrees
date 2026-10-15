@@ -62,21 +62,6 @@
 				qcom,mdss-dsi-panel-framerate = <120>;
 				#include "dsi-panel-p16u-41-02-0c-dsc-video-common.dtsi"
 				qcom,mdss-dsi-on-command = [
-					//Adjust the pluse width
-					39 00 00 40 00 00 06 F0 55 AA 52 08 00
-					39 00 00 40 00 00 02 6F 02
-					39 00 00 40 00 00 03 B5 16 C5
-					//solve AOD off flash
-					39 00 00 40 00 00 06 F0 55 AA 52 08 03
-					39 00 00 40 00 00 06 BB 31 10 00 3D 09
-					39 00 00 40 00 00 02 6F 05
-					39 00 00 40 00 00 04 BB 00 3D 09
-					39 00 00 40 00 00 02 6F 08
-					39 00 00 40 00 00 04 BB 00 3D 09
-					39 00 00 40 00 00 02 6F 0E
-					39 00 00 40 00 00 04 BB 00 3E 0B
-					39 00 00 40 00 00 02 6F 11
-					39 00 00 00 00 00 0A BB 00 00 6A 6A 00 00 6A 6A 6A
 					//ACL ON1800NIT
 					39 00 00 40 00 00 06 F0 55 AA 52 08 00
 					39 00 00 40 00 00 02 B0 04
