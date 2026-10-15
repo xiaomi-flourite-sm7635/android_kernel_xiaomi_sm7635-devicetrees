@@ -63,6 +63,13 @@
 &lpi_i2s2_sck_active { config { drive-strength = <2>; }; };
 &lpi_i2s2_ws_active { config { drive-strength = <2>; }; };
 &lpi_i2s2_sd0_active { config { drive-strength = <2>; }; };
+&lpi_i2s2_sd1_active {
+	config {
+		drive-strength = <2>;
+		/delete-property/ bias-disable;
+		bias-pull-down;
+	};
+};
 
 &tlmm {
 	flourite_amp0_reset: amp0-reset {
